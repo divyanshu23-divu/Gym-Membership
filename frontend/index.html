@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IronPulse – Gym Membership Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon">⚡</div>
+      <div>IRON<span>PULSE</span></div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features" class="nav-link">Features</a></li>
+      <li><a href="#plans" class="nav-link">Memberships</a></li>
+      <li><a href="#trainers" class="nav-link">Coaches</a></li>
+      <li><a href="#demo" class="nav-link" style="color: var(--accent-orange);">⚡ Demo Logins</a></li>
+    </ul>
+    <div class="nav-actions" id="nav-auth-actions">
+      <button class="btn-icon theme-toggle-btn" onclick="Auth.toggleTheme()" title="Toggle Theme">☀️</button>
+      <button class="btn btn-secondary" onclick="openLoginModal()">Sign In</button>
+      <button class="btn btn-primary" onclick="openRegisterModal()">Join Now</button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge">⚡ Next-Gen Gym Management & Membership Countdown</div>
+    <h1>CONQUER YOUR LIMITS.<br><span>TRACK EVERY PULSE.</span></h1>
+    <p>A full-featured gym membership ecosystem engineered with real-time membership countdowns, relational DBMS constraints, automated renewal extensions, and progress analytics.</p>
+    <div class="hero-cta">
+      <button class="btn btn-orange" style="font-size: 1.05rem; padding: 0.8rem 1.8rem;" onclick="openLoginModal()">
+        ⚡ Launch Demo Portal
+      </button>
+      <button class="btn btn-secondary" style="font-size: 1.05rem; padding: 0.8rem 1.8rem;" onclick="openRegisterModal()">
+        Register as Member
+      </button>
+    </div>
+  </section>
+
+  <!-- Quick Demo Credentials Callout -->
+  <section id="demo" style="max-width: 1000px; margin: 0 auto 4rem; padding: 0 1.5rem;">
+    <div class="card" style="border-color: rgba(255, 122, 0, 0.4); background: radial-gradient(circle at top, rgba(255, 122, 0, 0.08), transparent 70%), var(--bg-card);">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <span class="badge badge-orange">College Mini Project Showcase</span>
+          <h3 style="font-size: 1.3rem; margin-top: 0.35rem;">One-Click Demo Evaluator Access</h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">Click any role below to automatically sign in and inspect the features:</p>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem;">
+        <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; padding: 0.75rem 1rem;" onclick="openLoginModal(); quickLogin('admin@gym.com', 'admin123');">
+          <span style="font-size: 1.3rem;">👑</span>
+          <div>
+            <div style="font-weight: 700; color: var(--accent-primary);">Admin Portal</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">admin@gym.com</div>
+          </div>
+        </button>
+        <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; padding: 0.75rem 1rem;" onclick="openLoginModal(); quickLogin('alex.member@gym.com', 'member123');">
+          <span style="font-size: 1.3rem;">🚨</span>
+          <div>
+            <div style="font-weight: 700; color: var(--status-red);">Alex (3 Days Left)</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Red ring & Warning banner</div>
+          </div>
+        </button>
+        <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; padding: 0.75rem 1rem;" onclick="openLoginModal(); quickLogin('rachel.member@gym.com', 'member123');">
+          <span style="font-size: 1.3rem;">⏳</span>
+          <div>
+            <div style="font-weight: 700; color: var(--status-orange);">Rachel (14 Days Left)</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Orange status ring</div>
+          </div>
+        </button>
+        <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; padding: 0.75rem 1rem;" onclick="openLoginModal(); quickLogin('sarah.member@gym.com', 'member123');">
+          <span style="font-size: 1.3rem;">🟢</span>
+          <div>
+            <div style="font-weight: 700; color: var(--status-green);">Sarah (240 Days Left)</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Green active pass</div>
+          </div>
+        </button>
+        <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; padding: 0.75rem 1rem;" onclick="openLoginModal(); quickLogin('arthur.member@gym.com', 'member123');">
+          <span style="font-size: 1.3rem;">⚪</span>
+          <div>
+            <div style="font-weight: 700; color: var(--status-grey);">Arthur (Expired)</div>
+            <div style="font-size: 0.78rem; color: var(--text-dim);">Grey ring & renewal CTA</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Features Section -->
+  <section id="features" style="max-width: 1100px; margin: 0 auto 5rem; padding: 0 1.5rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <span class="badge badge-green">Engineered for Performance</span>
+      <h2 style="font-size: 2.2rem; margin-top: 0.5rem;">Core Features & Architecture</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">⏳</div>
+        <h3 style="margin-bottom: 0.5rem;">Dynamic Countdown Engine</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Days remaining dynamically computed from current date. Color-coded thresholds: Green (>15d), Orange (7–15d), Red (<7d with warning banner), and Grey (Expired).</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">🔄</div>
+        <h3 style="margin-bottom: 0.5rem;">Smart Renewal Extension</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Members submit renewal requests with custom plans. Staff approvals automatically extend from active end dates or today's date if expired.</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">📅</div>
+        <h3 style="margin-bottom: 0.5rem;">Attendance & Streaks</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Strict SQLite UNIQUE(member_id, date) constraint prevents duplicate check-ins. Interactive calendar highlights attended days with unbroken streaks.</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">📈</div>
+        <h3 style="margin-bottom: 0.5rem;">Progress Analytics (Chart.js)</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Interactive line charts tracking weight and measurements over time, coupled with automated Mifflin-St Jeor daily calorie targets.</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">🏋️</div>
+        <h3 style="margin-bottom: 0.5rem;">Trainer Workouts</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">Coaches assign tailored templates (Beginner, Hypertrophy, HIIT). Members check off exercises, sets, and reps day-by-day.</p>
+      </div>
+      <div class="card">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">🛡️</div>
+        <h3 style="margin-bottom: 0.5rem;">Role-Based Security</h3>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">JWT bearer tokens, bcrypt password hashing, parameterized SQL queries, and complete role-restricted endpoints for Admin and Members.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Plans & Pricing Section -->
+  <section id="plans" style="max-width: 1100px; margin: 0 auto 5rem; padding: 0 1.5rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <span class="badge badge-orange">Flexible Memberships</span>
+      <h2 style="font-size: 2.2rem; margin-top: 0.5rem;">Choose Your Training Plan</h2>
+      <p style="color: var(--text-muted); max-width: 600px; margin: 0.5rem auto 0;">All plans include full facility access, attendance tracking, and trainer support.</p>
+    </div>
+    <div class="grid-4" id="pricing-grid">
+      <!-- Loaded dynamically via landing.js -->
+    </div>
+  </section>
+
+  <!-- Trainers Section -->
+  <section id="trainers" style="max-width: 1000px; margin: 0 auto 5rem; padding: 0 1.5rem;">
+    <div style="text-align: center; margin-bottom: 2.5rem;">
+      <span class="badge badge-green">Elite Instruction</span>
+      <h2 style="font-size: 2.2rem; margin-top: 0.5rem;">Meet Our Head Coaches</h2>
+    </div>
+    <div class="grid-2" id="trainers-grid">
+      <!-- Loaded dynamically via landing.js -->
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="background-color: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 3rem 2rem 2rem; text-align: center;">
+    <div class="brand" style="justify-content: center; margin-bottom: 1rem;">
+      <div class="brand-icon">⚡</div>
+      <div>IRON<span>PULSE</span></div>
+    </div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 600px; margin: 0 auto 1.5rem;">
+      College Mini Project – Database Management System (DBMS) & Web Engineering.<br>
+      Built with Node.js, Express, SQLite (better-sqlite3), Vanilla JS, and Chart.js.
+    </p>
+    <div style="font-size: 0.8rem; color: var(--text-dim);">
+      Zero Cloud Setup • Local Relational Storage • Responsive Architecture
+    </div>
+  </footer>
+
+  <!-- Login Modal -->
+  <div class="modal-backdrop" id="login-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.3rem;">Sign In to IronPulse</h3>
+        <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+      </div>
+
+      <!-- Quick Fill Buttons for Live Evaluator Testing -->
+      <div style="background-color: var(--bg-secondary); padding: 0.75rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; border: 1px solid var(--border-color);">
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;">⚡ Quick Demo Autofill:</div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickLogin('admin@gym.com', 'admin123')">👑 Admin</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickLogin('alex.member@gym.com', 'member123')">🚨 Alex (3d Left)</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickLogin('sarah.member@gym.com', 'member123')">🟢 Sarah (Active)</button>
+        </div>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-control" required placeholder="e.g. admin@gym.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" required placeholder="Enter your password">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal-backdrop" id="register-modal">
+    <div class="modal-box" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.3rem;">New Member Registration</h3>
+        <button class="modal-close" onclick="closeRegisterModal()">&times;</button>
+      </div>
+      <form id="register-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-name">Full Name *</label>
+            <input type="text" id="reg-name" class="form-control" required placeholder="John Connor">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Email Address *</label>
+            <input type="email" id="reg-email" class="form-control" required placeholder="john@example.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password *</label>
+            <input type="password" id="reg-password" class="form-control" required placeholder="Minimum 6 characters">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-phone">Phone Number</label>
+            <input type="tel" id="reg-phone" class="form-control" placeholder="+1-555-0199">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-age">Age</label>
+            <input type="number" id="reg-age" class="form-control" placeholder="25">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-gender">Gender</label>
+            <select id="reg-gender" class="form-control">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-height">Height (cm)</label>
+            <input type="number" id="reg-height" class="form-control" placeholder="175" step="0.5">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-weight">Weight (kg)</label>
+            <input type="number" id="reg-weight" class="form-control" placeholder="72.5" step="0.1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-goal">Primary Fitness Goal</label>
+          <select id="reg-goal" class="form-control">
+            <option value="Muscle Gain">Muscle Gain & Hypertrophy</option>
+            <option value="Weight Loss">Weight Loss & Fat Burning</option>
+            <option value="Athletic Conditioning">Athletic Conditioning</option>
+            <option value="General Fitness">General Health & Fitness</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-plan">Select Membership Plan *</label>
+          <select id="reg-plan" class="form-control" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Create Account & Start</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Command Center – IronPulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/components.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <a href="/admin-dashboard.html" class="brand">
+          <div class="brand-icon">⚡</div>
+          <div>IRON<span>PULSE</span></div>
+        </a>
+      </div>
+
+      <nav class="admin-nav">
+        <a href="#overview" class="admin-nav-item active" data-tab="overview">
+          <span>📊</span> Overview & KPIs
+        </a>
+        <a href="#members" class="admin-nav-item" data-tab="members">
+          <span>👥</span> Members Directory
+        </a>
+        <a href="#attendance" class="admin-nav-item" data-tab="attendance">
+          <span>📅</span> Mark Attendance
+        </a>
+        <a href="#renewals" class="admin-nav-item" data-tab="renewals">
+          <span>🔄</span> Renewal Queue
+          <span id="pending-renewals-badge" class="admin-nav-badge" style="display: none;">0</span>
+        </a>
+        <a href="#workouts" class="admin-nav-item" data-tab="workouts">
+          <span>🏋️</span> Workout Plans
+        </a>
+        <a href="#trainers" class="admin-nav-item" data-tab="trainers">
+          <span>🧢</span> Trainer Roster
+        </a>
+        <a href="#plans" class="admin-nav-item" data-tab="plans">
+          <span>💳</span> Membership Plans
+        </a>
+        <a href="#feedback" class="admin-nav-item" data-tab="feedback">
+          <span>⭐</span> Feedback & Reviews
+        </a>
+
+        <!-- CSV Export Shortcuts -->
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+          <div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; padding: 0 1rem 0.5rem;">Data Exports</div>
+          <button class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 0.4rem; justify-content: flex-start;" onclick="downloadCSV('members')">
+            📥 Export Members CSV
+          </button>
+          <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: flex-start;" onclick="downloadCSV('payments')">
+            📥 Export Payments CSV
+          </button>
+        </div>
+      </nav>
+
+      <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-dim);">
+        IronPulse v1.0 • DBMS Mini Project
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="admin-main">
+      
+      <!-- Top Bar -->
+      <header class="admin-topbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <h2 style="font-size: 1.35rem;">Management Console</h2>
+          <span class="badge badge-green">Live Database</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+          <button class="btn btn-primary btn-sm" onclick="openAddMemberModal()">+ Add Member</button>
+          <button id="admin-theme-toggle" class="btn-icon theme-toggle-btn" title="Toggle Theme">☀️</button>
+          <button id="admin-logout-btn" class="btn btn-danger btn-sm">Sign Out</button>
+        </div>
+      </header>
+
+      <!-- Content Panels -->
+      <main class="admin-content">
+
+        <!-- 1. OVERVIEW & KPIS PANEL -->
+        <div id="panel-overview" class="admin-tab-panel">
+          
+          <!-- 6 Stat Cards -->
+          <div class="grid-3" style="margin-bottom: 2rem;">
+            
+            <div class="stat-card stat-green">
+              <div class="stat-icon" style="color: var(--accent-primary);">👥</div>
+              <div>
+                <div id="stat-total-members" class="stat-val">0</div>
+                <div class="stat-title">Total Members</div>
+              </div>
+            </div>
+
+            <div class="stat-card stat-green">
+              <div class="stat-icon" style="color: var(--status-green);">🟢</div>
+              <div>
+                <div id="stat-active-members" class="stat-val">0</div>
+                <div class="stat-title">Active Memberships</div>
+              </div>
+            </div>
+
+            <div class="stat-card stat-orange" style="cursor: pointer;" onclick="switchTab('members'); setMemberFilter('expiring');">
+              <div class="stat-icon" style="color: var(--status-orange);">⏳</div>
+              <div>
+                <div id="stat-expiring-soon" class="stat-val">0</div>
+                <div class="stat-title">Expiring in 7 Days</div>
+              </div>
+            </div>
+
+            <div class="stat-card stat-red" style="cursor: pointer;" onclick="switchTab('members'); setMemberFilter('expired');">
+              <div class="stat-icon" style="color: var(--status-red);">⚠️</div>
+              <div>
+                <div id="stat-expired-members" class="stat-val">0</div>
+                <div class="stat-title">Expired Members</div>
+              </div>
+            </div>
+
+            <div class="stat-card stat-cyan" style="cursor: pointer;" onclick="switchTab('attendance');">
+              <div class="stat-icon" style="color: var(--accent-cyan);">📅</div>
+              <div>
+                <div id="stat-today-checkins" class="stat-val">0</div>
+                <div class="stat-title">Today's Check-Ins</div>
+              </div>
+            </div>
+
+            <div class="stat-card stat-orange">
+              <div class="stat-icon" style="color: var(--accent-orange);">💵</div>
+              <div>
+                <div id="stat-monthly-revenue" class="stat-val">$0</div>
+                <div class="stat-title">Monthly Revenue</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Charts Grid (Chart.js) -->
+          <div class="grid-3" style="margin-bottom: 2rem;">
+            
+            <!-- Member Growth -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title" style="font-size: 1rem;">📈 Monthly Member Growth</h3>
+              </div>
+              <div style="height: 220px; position: relative;">
+                <canvas id="chartMemberGrowth"></canvas>
+              </div>
+            </div>
+
+            <!-- Revenue Trend -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title" style="font-size: 1rem;">💰 Monthly Revenue Trend</h3>
+              </div>
+              <div style="height: 220px; position: relative;">
+                <canvas id="chartRevenueTrend"></canvas>
+              </div>
+            </div>
+
+            <!-- Plan Distribution -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title" style="font-size: 1rem;">🍰 Plan Distribution</h3>
+              </div>
+              <div style="height: 220px; position: relative;">
+                <canvas id="chartPlanDist"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Post Gym Announcement Card -->
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom: 0.5rem;">📢 Broadcast Gym Announcement</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1rem;">Posts a message to the member portal bulletin board and dispatches in-app notifications.</p>
+            <form id="post-announcement-form">
+              <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                  <label class="form-label" for="notice-title">Notice Title *</label>
+                  <input type="text" id="notice-title" class="form-control" required placeholder="e.g. Strength Championship or Maintenance Notice">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label class="form-label" for="notice-priority">Priority</label>
+                  <select id="notice-priority" class="form-control">
+                    <option value="normal">Normal</option>
+                    <option value="urgent">Urgent / Alert</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="notice-content">Content *</label>
+                <textarea id="notice-content" class="form-control" rows="2" required placeholder="Write announcement details..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-secondary">Publish Notice</button>
+            </form>
+          </div>
+
+        </div>
+
+        <!-- 2. MEMBERS DIRECTORY PANEL -->
+        <div id="panel-members" class="admin-tab-panel" style="display: none;">
+          <div class="card">
+            <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <h3 class="card-title">👥 Member Management Directory</h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">View membership countdowns, search, and manage athletes</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openAddMemberModal()">+ Add New Member</button>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+              <input type="text" id="member-search-input" class="form-control" style="max-width: 320px;" placeholder="🔍 Search by name, email, or phone...">
+              
+              <div class="filter-pills">
+                <button class="pill active" data-filter="all" onclick="setMemberFilter('all')">All Members</button>
+                <button class="pill" data-filter="active" onclick="setMemberFilter('active')">🟢 Active</button>
+                <button class="pill" data-filter="expiring" onclick="setMemberFilter('expiring')">⏳ Expiring Soon</button>
+                <button class="pill" data-filter="expired" onclick="setMemberFilter('expired')">⚪ Expired</button>
+              </div>
+            </div>
+
+            <!-- Members Table -->
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Plan & Expiry</th>
+                    <th>Days Left</th>
+                    <th>Status</th>
+                    <th>Trainer</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="members-table-body">
+                  <!-- Populated dynamically via admin.js -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. ATTENDANCE PANEL -->
+        <div id="panel-attendance" class="admin-tab-panel" style="display: none;">
+          <div class="grid-3">
+            
+            <!-- Quick Check-in Console -->
+            <div class="card">
+              <h3 class="card-title" style="margin-bottom: 0.5rem;">⚡ Check-In Console</h3>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                Select member to verify daily entrance. The database enforces a <code style="color: var(--accent-cyan);">UNIQUE(member_id, date)</code> constraint to prevent duplicate entries.
+              </p>
+              <div class="form-group">
+                <label class="form-label" for="admin-checkin-member-select">Select Member</label>
+                <select id="admin-checkin-member-select" class="form-control">
+                  <!-- Filled dynamically -->
+                </select>
+              </div>
+              <button class="btn btn-primary" style="width: 100%;" onclick="handleAdminCheckin()">
+                ✓ Verify & Check In
+              </button>
+            </div>
+
+            <!-- Today's Logged Attendance -->
+            <div class="card" style="grid-column: span 2;">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">📅 Today's Check-In Log</h3>
+                  <div id="today-checkin-count-badge" style="font-size: 0.85rem; color: var(--text-muted);">0 Check-ins</div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Member Name</th>
+                      <th>Plan</th>
+                      <th>Goal</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="today-attendance-body">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 4. RENEWAL QUEUE PANEL -->
+        <div id="panel-renewals" class="admin-tab-panel" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">🔄 Membership Renewal Requests</h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Staff approval queue with automated subscription date extension</div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Current Plan</th>
+                    <th>Requested Plan</th>
+                    <th>Current Dates & Notes</th>
+                    <th>Submitted</th>
+                    <th>Decision</th>
+                  </tr>
+                </thead>
+                <tbody id="renewals-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. WORKOUT PLANS PANEL -->
+        <div id="panel-workouts" class="admin-tab-panel" style="display: none;">
+          <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 class="card-title" style="margin-bottom: 0.5rem;">🏋️ Workout Routine Templates</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Select a workout template below to assign and personalize for any registered gym member.</p>
+          </div>
+          <div class="grid-3" id="workout-templates-grid">
+            <!-- Templates -->
+          </div>
+        </div>
+
+        <!-- 6. TRAINERS ROSTER PANEL -->
+        <div id="panel-trainers" class="admin-tab-panel" style="display: none;">
+          <div class="card" style="margin-bottom: 1.5rem;">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">🧢 Fitness Coaches Roster</h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Instructors, specialties, and active athletes</div>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="openAddTrainerModal()">+ Add New Coach</button>
+            </div>
+          </div>
+          <div class="grid-2" id="admin-trainers-grid">
+            <!-- Trainers cards -->
+          </div>
+        </div>
+
+        <!-- 7. MEMBERSHIP PLANS PANEL -->
+        <div id="panel-plans" class="admin-tab-panel" style="display: none;">
+          <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 class="card-title">💳 Active Gym Plans & Rates</h3>
+          </div>
+          <div class="grid-4" id="admin-plans-grid">
+            <!-- Plans -->
+          </div>
+        </div>
+
+        <!-- 8. FEEDBACK & REVIEWS PANEL -->
+        <div id="panel-feedback" class="admin-tab-panel" style="display: none;">
+          <div class="card">
+            <h3 class="card-title" style="margin-bottom: 1rem;">⭐ Member Feedback & Reviews</h3>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Coach / Facility</th>
+                    <th>Rating</th>
+                    <th>Review</th>
+                    <th>Submitted</th>
+                  </tr>
+                </thead>
+                <tbody id="feedback-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- 1. Add Member Modal -->
+  <div class="modal-backdrop" id="add-member-modal">
+    <div class="modal-box" style="max-width: 580px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.3rem;">Register New Member</h3>
+        <button class="modal-close" onclick="closeAddMemberModal()">&times;</button>
+      </div>
+      <form id="add-member-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="add-name">Full Name *</label>
+            <input type="text" id="add-name" class="form-control" required placeholder="Marcus Fenix">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="add-email">Email Address *</label>
+            <input type="email" id="add-email" class="form-control" required placeholder="marcus@example.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="add-phone">Phone Number</label>
+            <input type="tel" id="add-phone" class="form-control" placeholder="+1-555-0188">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="add-age">Age</label>
+            <input type="number" id="add-age" class="form-control" placeholder="28">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="add-gender">Gender</label>
+            <select id="add-gender" class="form-control">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="add-weight">Weight (kg)</label>
+            <input type="number" id="add-weight" class="form-control" step="0.1" placeholder="80">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="add-goal">Goal</label>
+            <select id="add-goal" class="form-control">
+              <option value="Muscle Gain">Muscle Gain</option>
+              <option value="Weight Loss">Weight Loss</option>
+              <option value="General Fitness">General Fitness</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="add-trainer-id">Assign Coach</label>
+            <select id="add-trainer-id" class="form-control">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="add-plan-id">Membership Plan *</label>
+          <select id="add-plan-id" class="form-control" required>
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Member Record</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Edit Member Modal -->
+  <div class="modal-backdrop" id="edit-member-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.3rem;">Edit Member Details</h3>
+        <button class="modal-close" onclick="closeEditMemberModal()">&times;</button>
+      </div>
+      <form id="edit-member-form">
+        <input type="hidden" id="edit-member-id">
+        <div class="form-group">
+          <label class="form-label" for="edit-name">Full Name *</label>
+          <input type="text" id="edit-name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-phone">Phone</label>
+          <input type="tel" id="edit-phone" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-goal">Fitness Goal</label>
+          <select id="edit-goal" class="form-control">
+            <option value="Muscle Gain">Muscle Gain</option>
+            <option value="Weight Loss">Weight Loss</option>
+            <option value="Athletic Conditioning">Athletic Conditioning</option>
+            <option value="General Fitness">General Fitness</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-trainer-id">Assigned Coach</label>
+          <select id="edit-trainer-id" class="form-control">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-end-date">Membership Expiry Date</label>
+          <input type="date" id="edit-end-date" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Add Trainer Modal -->
+  <div class="modal-backdrop" id="add-trainer-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.3rem;">Add New Fitness Coach</h3>
+        <button class="modal-close" onclick="closeAddTrainerModal()">&times;</button>
+      </div>
+      <form id="add-trainer-form">
+        <div class="form-group">
+          <label class="form-label" for="trainer-name">Coach Name *</label>
+          <input type="text" id="trainer-name" class="form-control" required placeholder="Coach Linda">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="trainer-email">Email</label>
+            <input type="email" id="trainer-email" class="form-control" placeholder="linda@gym.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="trainer-phone">Phone</label>
+            <input type="tel" id="trainer-phone" class="form-control" placeholder="+1-555-0133">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="trainer-spec">Specialization *</label>
+          <input type="text" id="trainer-spec" class="form-control" required placeholder="e.g. Olympic Weightlifting & Mobility">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="trainer-bio">Bio</label>
+          <textarea id="trainer-bio" class="form-control" rows="2" placeholder="Brief coach biography..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Add Coach</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Assign Workout Modal -->
+  <div class="modal-backdrop" id="assign-workout-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.3rem;">Assign Workout Routine</h3>
+        <button class="modal-close" onclick="closeAssignWorkoutModal()">&times;</button>
+      </div>
+      <form id="assign-workout-form">
+        <input type="hidden" id="assign-workout-template-id">
+        <div style="margin-bottom: 1rem;">
+          Template: <strong id="assign-workout-template-title" style="color: var(--accent-primary);">--</strong>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="assign-workout-member-select">Select Member *</label>
+          <select id="assign-workout-member-select" class="form-control" required>
+            <!-- Filled dynamically -->
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Assign Routine to Member</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

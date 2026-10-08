@@ -1,0 +1,27 @@
+{
+  "name": "ironpulse-gym-membership-manager",
+  "version": "1.0.0",
+  "description": "IronPulse - Gym Membership Manager: Modern full-stack college mini project with SQLite, Express, and dynamic countdown engine",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "seed": "node database/seed.js",
+    "test": "node tests/test-core.js"
+  },
+  "keywords": [
+    "gym-management",
+    "membership-countdown",
+    "sqlite",
+    "express",
+    "vanilla-js"
+  ],
+  "author": "IronPulse Dev Team",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
